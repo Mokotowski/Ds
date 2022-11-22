@@ -23,7 +23,11 @@ namespace ConsoleApp1
             con.Open();
 
 
-            int Logowanie(string login, string password)
+
+
+
+
+            void Logowanie(string login, string password)
             {
                 string query = "select count(*) from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
                 MySqlCommand cmd = new MySqlCommand(query, con);
@@ -31,18 +35,41 @@ namespace ConsoleApp1
                 if (Count == 1)
                 {
                     Console.WriteLine($"Zalogowano pomyślnie");
+
+
+
+
+
+                    // dalsze przejście
+
+
+
+
                 }
                 else
                 {
-                    string querry = "select password from users WHERE login ='" + login + "'";
+                    string querry = "select haslo from users WHERE login ='" + login + "'";
+                    string querrry = "select login from users WHERE haslo ='" + password + "'";
+
                     MySqlCommand cmdd = new MySqlCommand(querry, con);
-                    MySqlDataReader rdr = cmdd.ExecuteReader();
+                    MySqlCommand cmddd = new MySqlCommand(querrry, con);
+                    string loginem = (string)cmdd.ExecuteScalar();
+                    string haslem = (string)cmddd.ExecuteScalar();
+                    if  (haslem == password)
+                    {
+                        Console.WriteLine("Nie poprawny login");
+                    }
+                    else if (loginem == login) 
+                    {
+                        Console.WriteLine("Nie poprawne hasło");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Takie konto nie istnieje");
+                    }
 
 
                 }
-
-                return Count;
-
             }
 
             void Rejestracja(string login, string password)
@@ -143,14 +170,7 @@ namespace ConsoleApp1
                     Console.WriteLine($"Podaj hasło");
                     Console.Write($"Hasło:");
                     string haslo = Console.ReadLine();
-                    if (Logowanie(login, haslo) == 1)
-                    {
-                        // dostęp dalej
-                    }
-                    else
-                    {
-                        Console.Write($"Nie zalogowano poprawnie");
-                    }
+                    Logowanie(login, haslo);
                 }
                 else if (start == "2") 
                 {
@@ -173,8 +193,8 @@ namespace ConsoleApp1
                         Console.WriteLine($"Hasła nie są identyczne");
                     }
                 }
-            }
             Thread.Sleep(5);
+            }
         }
     }
 }
