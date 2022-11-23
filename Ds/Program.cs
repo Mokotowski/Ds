@@ -89,14 +89,14 @@ namespace ConsoleApp1
                         string aktyw = Console.ReadLine();
                         if (aktyw == "1")
                         {
-                            Console.Write("Podaj nowy nick:")
+                            Console.Write("Podaj nowy nick:");
                             string newnick = Console.ReadLine();
                             settag(login, password, newnick);
 
                         }
                         else if (aktyw == "2")
                         {
-                            Console.Write("Podaj nowy tag:")
+                            Console.Write("Podaj nowy tag:");
                             string newtag = Console.ReadLine();
                             settag(login, password, newtag);
                         }
