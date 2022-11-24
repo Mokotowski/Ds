@@ -535,6 +535,10 @@ namespace ConsoleApp1
 }
 
 
+CREATE TABLE znajomi
+(friends VARCHAR(255) KEY REFERENCES users(addfriend)),
+(ownernick VARCHAR(36) KEY REFERENCES users(nick)),
+(ownertag VARCHAR(36) KEY REFERENCES users(tag))
 
 
 

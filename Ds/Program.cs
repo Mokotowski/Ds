@@ -26,6 +26,47 @@ namespace ConsoleApp1
             var con = new MySqlConnection(cs);
             con.Open();
 
+            bool ownerexist(string owner)
+            {
+                string query = "select count(*) from users WHERE owner ='" + owner + "'";
+                MySqlCommand cmd = new MySqlCommand(query, con);
+                if(int.Parse(cmd.ExecuteScalar() + "")==0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            string owner()
+            {
+                string ow = "";
+                Random generator = new Random();
+                for (int i = 0; i < 36; i++)
+                {
+                    ow = ow + $"{Convert.ToString((generator.Next(1, 9)))}";
+                }
+                return ow;
+            }
+            void setowner(string login, string password)
+            {
+                string s = owner();
+                if(ownerexist(s))
+                {
+                    string que = "UPDATE `users` SET `owner`= '" + s + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand ggg = new MySqlCommand();
+                    ggg.CommandText = que;
+                    ggg.Connection = con;
+                    ggg.ExecuteNonQuery();
+                    Console.WriteLine("Usawiono ownera");
+                }
+                else
+                {
+                    Console.WriteLine("Istnieje konto o takim ownerze");  
+                }
+            }
 
             string getnick(string login, string password)
             {
@@ -46,6 +87,23 @@ namespace ConsoleApp1
                     ggg.Connection = con;
                     ggg.ExecuteNonQuery();
                     Console.WriteLine("Zmieniono nick");
+
+
+
+                    string gh = "select nick from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand hj = new MySqlCommand(gh, con);
+                    string nickk = (string)hj.ExecuteScalar();
+                    string ghh = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
+                    MySqlCommand hh = new MySqlCommand(ghh, con);
+                    string tagg = (string)hh.ExecuteScalar();
+                    string addfriend = nickk + tagg;
+                    string quee = "UPDATE `users` SET `addfriend`= '" + addfriend + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand gggg = new MySqlCommand();
+                    gggg.CommandText = quee;
+                    gggg.Connection = con;
+                    gggg.ExecuteNonQuery();
+
+
                 }
                 else
                 {
@@ -112,6 +170,20 @@ namespace ConsoleApp1
                         ggg.Connection = con;
                         ggg.ExecuteNonQuery();
                         Console.WriteLine("Zmieniono tag");
+
+
+                        string gh = "select nick from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                        MySqlCommand hj = new MySqlCommand(gh, con);
+                        string nickk = (string)hj.ExecuteScalar();
+                        string ghh = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
+                        MySqlCommand hh = new MySqlCommand(ghh, con);
+                        string tagg = (string)hh.ExecuteScalar();
+                        string addfriend = nickk + tagg;
+                        string quee = "UPDATE `users` SET `addfriend`= '" + addfriend + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                        MySqlCommand gggg = new MySqlCommand();
+                        gggg.CommandText = quee;
+                        gggg.Connection = con;
+                        gggg.ExecuteNonQuery();
                     }
                     else
                     {
@@ -138,7 +210,7 @@ namespace ConsoleApp1
                 return  int.Parse(cmd.ExecuteScalar() + "");
 
             }
-
+            
 
 
 
@@ -158,6 +230,9 @@ namespace ConsoleApp1
                         Console.WriteLine($"Nick:{nazwakonta}");
                         Console.WriteLine("Zmień nick -- 1");
                         Console.WriteLine("Zmień tag -- 2");
+                        Console.WriteLine("Lista znajomych: ");
+
+
                         string aktyw = Console.ReadLine();
                         if (aktyw == "1")
                         {
@@ -187,14 +262,17 @@ namespace ConsoleApp1
                     if  (haslem == password)
                     {
                         Console.WriteLine("Nie poprawny login");
+                        Console.ReadLine();
                     }
                     else if (loginem == login) 
                     {
                         Console.WriteLine("Nie poprawne hasło");
+                        Console.ReadLine();
                     }
                     else
                     {
                         Console.WriteLine("Takie konto nie istnieje");
+                        Console.ReadLine();
                     }
 
 
@@ -212,11 +290,13 @@ namespace ConsoleApp1
                     MySqlCommand cmdd = new MySqlCommand(cmdText, con);
                     cmdd.ExecuteNonQuery();
                     setnick(login, password, nick);
-                    settag(login, password, losujtag());  
+                    settag(login, password, losujtag());
+                    setowner(login, password);
                 }
                 else
                 {
                     Console.WriteLine($"Istnieje konto o takim loginie");
+                    Console.ReadLine();
                 }
             }
 
@@ -279,8 +359,9 @@ namespace ConsoleApp1
                 Console.Clear();
                 Console.WriteLine($"Logowanie -- 1");
                 Console.WriteLine($"Rejestracja -- 2");
-
-
+                string h = owner();
+                Console.WriteLine(h);
+                Console.WriteLine(h.Length);
                 string start = Console.ReadLine();
                 if (start == "1")
                 {
@@ -314,6 +395,7 @@ namespace ConsoleApp1
                     else
                     {
                         Console.WriteLine($"Hasła nie są identyczne");
+                        Console.ReadLine();
                     }
                 }
             Thread.Sleep(5);
