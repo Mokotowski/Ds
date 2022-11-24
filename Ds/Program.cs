@@ -9,6 +9,7 @@ using Microsoft.VisualBasic;
 using Org.BouncyCastle.Utilities.Collections;
 using System.Security.Policy;
 using Org.BouncyCastle.Crypto.Modes.Gcm;
+using System.Diagnostics.SymbolStore;
 
 namespace ConsoleApp1
 {
@@ -26,11 +27,14 @@ namespace ConsoleApp1
             var con = new MySqlConnection(cs);
             con.Open();
 
-            bool ownerexist(string owner)
+
+
+            // wartowniki
+            bool nickandtagexist(string nick, string tag)
             {
-                string query = "select count(*) from users WHERE owner ='" + owner + "'";
+                string query = "select count(*) from users WHERE nick ='" + nick + "' AND tag ='" + tag + "'";
                 MySqlCommand cmd = new MySqlCommand(query, con);
-                if(int.Parse(cmd.ExecuteScalar() + "")==0)
+                if (int.Parse(cmd.ExecuteScalar() + "") == 0)
                 {
                     return true;
                 }
@@ -40,78 +44,19 @@ namespace ConsoleApp1
                 }
             }
 
-            string owner()
+            bool ownerexist(string owner)
             {
-                string ow = "";
-                Random generator = new Random();
-                for (int i = 0; i < 36; i++)
+                string query = "select count(*) from users WHERE owner ='" + owner + "'";
+                MySqlCommand cmd = new MySqlCommand(query, con);
+                if (int.Parse(cmd.ExecuteScalar() + "") == 0)
                 {
-                    ow = ow + $"{Convert.ToString((generator.Next(1, 9)))}";
-                }
-                return ow;
-            }
-            void setowner(string login, string password)
-            {
-                string s = owner();
-                if(ownerexist(s))
-                {
-                    string que = "UPDATE `users` SET `owner`= '" + s + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand ggg = new MySqlCommand();
-                    ggg.CommandText = que;
-                    ggg.Connection = con;
-                    ggg.ExecuteNonQuery();
-                    Console.WriteLine("Usawiono ownera");
+                    return true;
                 }
                 else
                 {
-                    Console.WriteLine("Istnieje konto o takim ownerze");  
+                    return false;
                 }
             }
-
-            string getnick(string login, string password)
-            {
-                string que = "select nick from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
-                MySqlCommand gg = new MySqlCommand(que, con);
-                return (string)gg.ExecuteScalar();
-            }
-            void setnick(string login, string password, string nick)
-            {
-                string re = "select tag from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                MySqlCommand h = new MySqlCommand(re, con);
-                string tag = (string)h.ExecuteScalar();
-                if (nickandtagexist(nick, tag) == 0)
-                {
-                    string que = "UPDATE `users` SET `nick`= '" + nick + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand ggg = new MySqlCommand();
-                    ggg.CommandText = que;
-                    ggg.Connection = con;
-                    ggg.ExecuteNonQuery();
-                    Console.WriteLine("Zmieniono nick");
-
-
-
-                    string gh = "select nick from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand hj = new MySqlCommand(gh, con);
-                    string nickk = (string)hj.ExecuteScalar();
-                    string ghh = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
-                    MySqlCommand hh = new MySqlCommand(ghh, con);
-                    string tagg = (string)hh.ExecuteScalar();
-                    string addfriend = nickk + tagg;
-                    string quee = "UPDATE `users` SET `addfriend`= '" + addfriend + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand gggg = new MySqlCommand();
-                    gggg.CommandText = quee;
-                    gggg.Connection = con;
-                    gggg.ExecuteNonQuery();
-
-
-                }
-                else
-                {
-                    Console.WriteLine("Taki nick istnieje przy koncie o takim amym tagu");
-                }
-
-            }
-
 
             bool istag(string tag)
             {
@@ -147,13 +92,119 @@ namespace ConsoleApp1
                     return false;
                 }
             }
+
+
+
+
+
+
+
+
+            // Losowania jednorazowe
+            string losujowner()
+            {
+                string ow = "";
+                Random generator = new Random();
+                for (int i = 0; i < 36; i++)
+                {
+                    ow = ow + $"{Convert.ToString((generator.Next(1, 9)))}";
+                }
+                return ow;
+            }
+            string losujtag()
+            {
+                Random generator = new Random();
+                string tag = $"#{Convert.ToString((generator.Next(10000, 99999)))}";
+                return tag;
+
+            }
+
+
+
+
+
+
+
+            //Pobrania
+            string getnick(string login, string password)
+            {
+                string que = "select nick from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                return (string)gg.ExecuteScalar();
+            }
+
             string gettag(string login, string password)
             {
                 string que = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
                 MySqlCommand gg = new MySqlCommand(que, con);
                 return (string)gg.ExecuteScalar();
             }
-            void settag(string login, string password, string tag)
+
+
+
+            //Usawianie na sql
+            void setowner(string login, string password, ref bool wartowner)
+            {
+                string s = losujowner();
+                if (ownerexist(s))
+                {
+                    string que = "UPDATE `users` SET `owner`= '" + s + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand ggg = new MySqlCommand();
+                    ggg.CommandText = que;
+                    ggg.Connection = con;
+                    ggg.ExecuteNonQuery();
+                    Console.WriteLine("Usawiono ownera");
+                    wartowner = true;
+                }
+                else
+                {
+                    Console.WriteLine("Istnieje konto o takim ownerze");
+                }
+            }
+
+
+            void setnick(string login, string password, string nick, ref bool wartnick)
+            {
+                string re = "select tag from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                MySqlCommand h = new MySqlCommand(re, con);
+                string tag = (string)h.ExecuteScalar();
+                if (nickandtagexist(nick, tag))
+                {
+                    string que = "UPDATE `users` SET `nick`= '" + nick + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand ggg = new MySqlCommand();
+                    ggg.CommandText = que;
+                    ggg.Connection = con;
+                    ggg.ExecuteNonQuery();
+                    Console.WriteLine("Zmieniono nick");
+
+
+
+                    string gh = "select nick from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand hj = new MySqlCommand(gh, con);
+                    string nickk = (string)hj.ExecuteScalar();
+                    string ghh = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
+                    MySqlCommand hh = new MySqlCommand(ghh, con);
+                    string tagg = (string)hh.ExecuteScalar();
+                    string addfriend = nickk + tagg;
+                    string quee = "UPDATE `users` SET `addfriend`= '" + addfriend + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand gggg = new MySqlCommand();
+                    gggg.CommandText = quee;
+                    gggg.Connection = con;
+                    gggg.ExecuteNonQuery();
+                    wartnick = true;
+
+                }
+                else
+                {
+                    Console.WriteLine("Taki nick istnieje przy koncie o takim samym tagu");
+                }
+
+            }
+
+
+
+
+            void settag(string login, string password, string tag, ref bool warttag)
             {
                 tag.Trim();
                 if (istag(tag))
@@ -162,7 +213,7 @@ namespace ConsoleApp1
                     MySqlCommand h = new MySqlCommand(re, con);
                     string nick = (string)h.ExecuteScalar();
 
-                    if (nickandtagexist(nick, tag) == 0)
+                    if (nickandtagexist(nick, tag))
                     {
                         string que = "UPDATE `users` SET `tag`= '" + tag + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
                         MySqlCommand ggg = new MySqlCommand();
@@ -184,6 +235,7 @@ namespace ConsoleApp1
                         gggg.CommandText = quee;
                         gggg.Connection = con;
                         gggg.ExecuteNonQuery();
+                        warttag = true;
                     }
                     else
                     {
@@ -194,23 +246,31 @@ namespace ConsoleApp1
                 {
                     Console.WriteLine("To nie jest tag przykład #12345");
                 }
-            } 
-            string losujtag()
-            {
-                Random generator = new Random();
-                string tag = $"#{Convert.ToString((generator.Next(10000, 99999)))}";
-                return tag;
-
             }
 
-            int nickandtagexist(string nick, string tag)
-            {
-                string query = "select count(*) from users WHERE nick ='" + nick + "' AND tag ='" + tag + "'";
-                MySqlCommand cmd = new MySqlCommand(query, con);
-                return  int.Parse(cmd.ExecuteScalar() + "");
 
-            }
-            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -223,7 +283,7 @@ namespace ConsoleApp1
                 {
                     Console.WriteLine($"Zalogowano pomyślnie");
 
-                    while(true==true)
+                    while (true == true)
                     {
                         Console.Clear();
                         string nazwakonta = getnick(login, password) + gettag(login, password);
@@ -238,14 +298,16 @@ namespace ConsoleApp1
                         {
                             Console.Write("Podaj nowy nick:");
                             string newnick = Console.ReadLine();
-                            setnick(login, password, newnick);
+                            bool op=true;
+                            setnick(login, password, newnick, ref op);
                             Console.ReadLine();
                         }
                         else if (aktyw == "2")
                         {
                             Console.Write("Podaj nowy tag:");
                             string newtag = Console.ReadLine();
-                            settag(login, password, newtag);
+                            bool op = true;
+                            settag(login, password, newtag, ref op);
                             Console.ReadLine();
                         }
                     }
@@ -259,12 +321,12 @@ namespace ConsoleApp1
                     MySqlCommand cmddd = new MySqlCommand(querrry, con);
                     string loginem = (string)cmdd.ExecuteScalar();
                     string haslem = (string)cmddd.ExecuteScalar();
-                    if  (haslem == password)
+                    if (haslem == password)
                     {
                         Console.WriteLine("Nie poprawny login");
                         Console.ReadLine();
                     }
-                    else if (loginem == login) 
+                    else if (loginem == login)
                     {
                         Console.WriteLine("Nie poprawne hasło");
                         Console.ReadLine();
@@ -289,9 +351,16 @@ namespace ConsoleApp1
                     string cmdText = "insert into users(login,haslo) values('" + login + "','" + password + "');";
                     MySqlCommand cmdd = new MySqlCommand(cmdText, con);
                     cmdd.ExecuteNonQuery();
-                    setnick(login, password, nick);
-                    settag(login, password, losujtag());
-                    setowner(login, password);
+                    bool wartnick = false, warttag = false, wartowner = false;
+                    setnick(login, password, nick, ref wartnick);
+                    settag(login, password, losujtag(), ref warttag);
+                    if (warttag==true && wartnick == true)
+                    {
+                        while (wartowner != true)
+                        {
+                            setowner(login, password, ref wartowner);
+                        }
+                    }
                 }
                 else
                 {
@@ -301,67 +370,11 @@ namespace ConsoleApp1
             }
 
 
-
-
-           
-
-
-
-
-            void wczytajczat()
-            {
-                string sql = "SELECT user, text FROM czat ORDER BY id DESC LIMIT 10";
-                MySqlCommand cmd = new MySqlCommand(sql, con);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                var czat = new List<string> { };
-                while (rdr.Read())
-                {
-                    string s = rdr[0] + ":" + rdr[1];
-                    czat.Add(s);
-                }
-                czat.Reverse();
-                rdr.Close();
-                foreach (var sss in czat)
-                {
-                    Console.WriteLine(sss);
-                }
-
-
-            }
-
-
-            void pisznaczacie(string osoba, string wiadomosci)
-            {
-                string cmdText = "insert into czat(user,text) values('" + osoba + "','" + wiadomosci + "');";
-                MySqlCommand cmd = new MySqlCommand(cmdText, con);
-                cmd.ExecuteNonQuery();
-
-
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             while (true == true)
             {
                 Console.Clear();
                 Console.WriteLine($"Logowanie -- 1");
                 Console.WriteLine($"Rejestracja -- 2");
-                string h = owner();
-                Console.WriteLine(h);
-                Console.WriteLine(h.Length);
                 string start = Console.ReadLine();
                 if (start == "1")
                 {
@@ -373,7 +386,7 @@ namespace ConsoleApp1
                     string haslo = Console.ReadLine();
                     Logowanie(login, haslo);
                 }
-                else if (start == "2") 
+                else if (start == "2")
                 {
                     Console.WriteLine("Rejestracja");
                     Console.WriteLine($"Podaj login");
@@ -398,7 +411,7 @@ namespace ConsoleApp1
                         Console.ReadLine();
                     }
                 }
-            Thread.Sleep(5);
+                Thread.Sleep(5);
             }
         }
     }
