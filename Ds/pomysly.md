@@ -1,6 +1,8 @@
 ﻿wszystko na obektówke
-uporządkowanie funkcji
-
+dodać tworzenie w znajomi owner = owner i friens = [] 
+przy tworzeniu konta 
+system dodawania
+odczytywania
 
 
 
