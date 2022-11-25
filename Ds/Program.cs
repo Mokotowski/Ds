@@ -13,10 +13,39 @@ using System.Diagnostics.SymbolStore;
 
 namespace ConsoleApp1
 {
+    public class Uzytkownik
+    {
+        public Uzytkownik() { }
+        public Uzytkownik(string login, string haslo, string nick, string tag, string addfriend, string owner)
+        {
+            Login = login;
+            Haslo = haslo;
+            Nick = nick;
+            Tag = tag;
+            Addfriend = addfriend;
+            Owner = owner;
+        }
+
+        public string Login { get; set; }
+        public string Haslo { get; set; }
+        public string Nick { get; set; }
+        public string Tag { get; set; }
+        public string Addfriend { get; set; }
+        public string Owner { get; set; }
+    }
+
+
+
+
+
     internal class Program
     {
+       
+
         static void Main(string[] args)
         {
+            Uzytkownik zalogowany = new Uzytkownik();
+
 
             Console.Title = "App by Mokotowski#2531";
             string server = "116.202.211.83";
@@ -140,6 +169,12 @@ namespace ConsoleApp1
                 return (string)gg.ExecuteScalar();
             }
 
+            string getowner(string login, string password)
+            {
+                string que = "select owner from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                return (string)gg.ExecuteScalar();
+            }
 
 
             //Usawianie na sql
@@ -163,7 +198,7 @@ namespace ConsoleApp1
             }
 
 
-            void setnick(string login, string password, string nick, ref bool wartnick)
+            void setnick(string login, string password, string nick, ref bool wartnick, ref Uzytkownik zalogowany)
             {
                 string re = "select tag from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
                 MySqlCommand h = new MySqlCommand(re, con);
@@ -192,6 +227,7 @@ namespace ConsoleApp1
                     gggg.Connection = con;
                     gggg.ExecuteNonQuery();
                     wartnick = true;
+                    zalogowany.Nick = nick;
 
                 }
                 else
@@ -204,7 +240,7 @@ namespace ConsoleApp1
 
 
 
-            void settag(string login, string password, string tag, ref bool warttag)
+            void settag(string login, string password, string tag, ref bool warttag, ref Uzytkownik zalogowany)
             {
                 tag.Trim();
                 if (istag(tag))
@@ -236,6 +272,7 @@ namespace ConsoleApp1
                         gggg.Connection = con;
                         gggg.ExecuteNonQuery();
                         warttag = true;
+                        zalogowany.Tag = tagg;
                     }
                     else
                     {
@@ -276,11 +313,18 @@ namespace ConsoleApp1
 
             void Logowanie(string login, string password)
             {
+
                 string query = "select count(*) from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
                 MySqlCommand cmd = new MySqlCommand(query, con);
                 int Count = int.Parse(cmd.ExecuteScalar() + "");
                 if (Count == 1)
                 {
+                    zalogowany.Login = login;
+                    zalogowany.Haslo = password;
+                    zalogowany.Nick  = getnick(login, password);
+                    zalogowany.Tag = gettag(login, password);
+                    zalogowany.Addfriend = getnick(login, password) + gettag(login, password);
+                    zalogowany.Owner = getowner(login, password);
                     Console.WriteLine($"Zalogowano pomyślnie");
 
                     while (true == true)
@@ -299,7 +343,7 @@ namespace ConsoleApp1
                             Console.Write("Podaj nowy nick:");
                             string newnick = Console.ReadLine();
                             bool op=true;
-                            setnick(login, password, newnick, ref op);
+                            setnick(login, password, newnick, ref op, ref zalogowany);
                             Console.ReadLine();
                         }
                         else if (aktyw == "2")
@@ -307,7 +351,7 @@ namespace ConsoleApp1
                             Console.Write("Podaj nowy tag:");
                             string newtag = Console.ReadLine();
                             bool op = true;
-                            settag(login, password, newtag, ref op);
+                            settag(login, password, newtag, ref op, ref zalogowany);
                             Console.ReadLine();
                         }
                     }
@@ -352,8 +396,8 @@ namespace ConsoleApp1
                     MySqlCommand cmdd = new MySqlCommand(cmdText, con);
                     cmdd.ExecuteNonQuery();
                     bool wartnick = false, warttag = false, wartowner = false;
-                    setnick(login, password, nick, ref wartnick);
-                    settag(login, password, losujtag(), ref warttag);
+                    setnick(login, password, nick, ref wartnick, ref zalogowany);
+                    settag(login, password, losujtag(), ref warttag, ref zalogowany);
                     if (warttag==true && wartnick == true)
                     {
                         while (wartowner != true)
