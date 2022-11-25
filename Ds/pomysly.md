@@ -3,7 +3,7 @@ dodać tworzenie w znajomi owner = owner i friens = []
 przy tworzeniu konta 
 system dodawania
 odczytywania
-
+// wypisywanie odrazu z liczbami to wejdcia do czatu i odrazu a nie literuje
 
 
             void wczytajczat()

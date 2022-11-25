@@ -11,6 +11,8 @@ using System.Security.Policy;
 using Org.BouncyCastle.Crypto.Modes.Gcm;
 using System.Diagnostics.SymbolStore;
 
+
+
 namespace ConsoleApp1
 {
     public class Uzytkownik
@@ -33,7 +35,21 @@ namespace ConsoleApp1
         public string Addfriend { get; set; }
         public string Owner { get; set; }
     }
-
+    public class Znajomy
+    {
+        public Znajomy() { }
+        public Znajomy(string nick, string tag, string addfriend, string owner)
+        {
+            Nick = nick;
+            Tag = tag;
+            Addfriend = addfriend;
+            Owner = owner;
+        }
+        public string Nick { get; set; }
+        public string Tag { get; set; }
+        public string Addfriend { get; set; }
+        public string Owner { get; set; }
+    }
 
 
 
@@ -121,6 +137,97 @@ namespace ConsoleApp1
                     return false;
                 }
             }
+
+
+
+
+            void zaladujznajomych(string owner)
+            {
+                List<string> znajomi = new List<string>();
+                string que = "select friends from znajomi WHERE owner ='" + owner +"'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                string lista = (string)gg.ExecuteScalar();
+                lista = lista.Remove(0, 1);
+                string znak = "[";
+                while (znak != "]")
+                {
+                    string osoba = "";
+                    int index = lista.IndexOf(",");
+                    if (index != 0)
+                    {
+                        if (index == -1)
+                        {
+                            for (int i = 0; i < lista.IndexOf("]"); i++)
+                            {
+                                osoba = osoba + lista[i];
+                                znak = lista[i].ToString();
+                                znajomi.Add(osoba);
+
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < index; i++)
+                            {
+                                osoba = osoba + lista[i];
+                                znak = lista[i].ToString();
+                                znajomi.Add(osoba);
+
+                            }
+                        }
+                        if (index == -1)
+                        {
+                            lista = lista.Remove(0, lista.IndexOf("]"));
+                            lista = lista.Remove(0, 1);
+                            znak = "]";
+
+                        }
+                        else
+                        { 
+                            lista = lista.Remove(0, lista.IndexOf(","));
+                            lista = lista.Remove(0, 1);
+                        }
+                    }
+                    if (osoba != "")
+                    {
+                        znajomi.Add(osoba);
+                    }
+
+                    Thread.Sleep(1000);
+                }
+                foreach (string i in znajomi)
+                {
+                    Console.WriteLine(i.ToString());
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -335,6 +442,7 @@ namespace ConsoleApp1
                         Console.WriteLine("Zmień nick -- 1");
                         Console.WriteLine("Zmień tag -- 2");
                         Console.WriteLine("Lista znajomych: ");
+                        zaladujznajomych(zalogowany.Owner);
 
 
                         string aktyw = Console.ReadLine();
