@@ -82,7 +82,7 @@
 //  }
 
 // Pętla foreach najczęściej wykorzystywana z tablicami powtarza instrukcje dla każdego elemoentu po koleji
-//   foreach (var name in names)
+//    foreach (var name in names)
 //    {
 //    Console.WriteLine($"Hello {name}!");
 //    }

@@ -140,10 +140,8 @@ namespace ConsoleApp1
 
 
 
-
-            void zaladujznajomych(string owner)
+            void zaladujznajomych(string owner, ref List<string> znajomi)
             {
-                List<string> znajomi = new List<string>();
                 string que = "select friends from znajomi WHERE owner ='" + owner +"'";
                 MySqlCommand gg = new MySqlCommand(que, con);
                 string lista = (string)gg.ExecuteScalar();
@@ -161,8 +159,6 @@ namespace ConsoleApp1
                             {
                                 osoba = osoba + lista[i];
                                 znak = lista[i].ToString();
-                                znajomi.Add(osoba);
-
                             }
                         }
                         else
@@ -171,8 +167,6 @@ namespace ConsoleApp1
                             {
                                 osoba = osoba + lista[i];
                                 znak = lista[i].ToString();
-                                znajomi.Add(osoba);
-
                             }
                         }
                         if (index == -1)
@@ -192,40 +186,225 @@ namespace ConsoleApp1
                     {
                         znajomi.Add(osoba);
                     }
-
-                    Thread.Sleep(1000);
                 }
-                foreach (string i in znajomi)
+                int j = 0;
+                foreach (var znajomy in znajomi)
                 {
-                    Console.WriteLine(i.ToString());
+                    j++;
+                    Console.WriteLine(j+"."+znajomy);
                 }
+
+            }
+
+
+            void zaposzeniadoznajomych(string owner, ref List<string> znajomi)
+            {
+                string que = "select oczekujace from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                string lista = (string)gg.ExecuteScalar();
+                lista = lista.Remove(0, 1);
+                string znak = "[";
+                while (znak != "]")
+                {
+                    string osoba = "";
+                    int index = lista.IndexOf(",");
+                    if (index != 0)
+                    {
+                        if (index == -1)
+                        {
+                            for (int i = 0; i < lista.IndexOf("]"); i++)
+                            {
+                                osoba = osoba + lista[i];
+                                znak = lista[i].ToString();
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < index; i++)
+                            {
+                                osoba = osoba + lista[i];
+                                znak = lista[i].ToString();
+                            }
+                        }
+                        if (index == -1)
+                        {
+                            lista = lista.Remove(0, lista.IndexOf("]"));
+                            lista = lista.Remove(0, 1);
+                            znak = "]";
+
+                        }
+                        else
+                        {
+                            lista = lista.Remove(0, lista.IndexOf(","));
+                            lista = lista.Remove(0, 1);
+                        }
+                    }
+                    if (osoba != "")
+                    {
+                        znajomi.Add(osoba);
+                    }
+                }
+                int j = 0;
+                foreach (var znajomy in znajomi)
+                {
+                    j++;
+                    Console.WriteLine(j + "." + znajomy);
+                }
+
+            }
+
+
+            void zaproszeniadoodbioru(string owner, ref List<string> znajomi)
+            {
+                string que = "select odebrane from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                string lista = (string)gg.ExecuteScalar();
+                lista = lista.Remove(0, 1);
+                string znak = "[";
+                while (znak != "]")
+                {
+                    string osoba = "";
+                    int index = lista.IndexOf(",");
+                    if (index != 0)
+                    {
+                        if (index == -1)
+                        {
+                            for (int i = 0; i < lista.IndexOf("]"); i++)
+                            {
+                                osoba = osoba + lista[i];
+                                znak = lista[i].ToString();
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < index; i++)
+                            {
+                                osoba = osoba + lista[i];
+                                znak = lista[i].ToString();
+                            }
+                        }
+                        if (index == -1)
+                        {
+                            lista = lista.Remove(0, lista.IndexOf("]"));
+                            lista = lista.Remove(0, 1);
+                            znak = "]";
+
+                        }
+                        else
+                        {
+                            lista = lista.Remove(0, lista.IndexOf(","));
+                            lista = lista.Remove(0, 1);
+                        }
+                    }
+                    if (osoba != "")
+                    {
+                        znajomi.Add(osoba);
+                    }
+                }
+                int j = 0;
+                foreach (var znajomy in znajomi)
+                {
+                    j++;
+                    Console.WriteLine(j + "." + znajomy);
+                }
+
             }
 
 
 
 
+            void dodajznajomego(string owner, string addfriend)
+            {
+                string que = "select friends from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                string lista = (string)gg.ExecuteScalar();
+                string q = "select oczekujace from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand y = new MySqlCommand(q, con);
+                string oczekujace = (string)y.ExecuteScalar();
+                if (!lista.Contains(addfriend))
+                {
+                    if (!oczekujace.Contains(addfriend))
+                    {
+                        if (oczekujace == "[]")
+                        {
+                            oczekujace = oczekujace.Remove(oczekujace.Length - 1, 1);
+                            oczekujace = oczekujace + addfriend + "]";
+                            string quee = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + owner + "'";
+                            MySqlCommand ggg = new MySqlCommand();
+                            ggg.CommandText = quee;
+                            ggg.Connection = con;
+                            ggg.ExecuteNonQuery();
+                            string ee = "select odebrane from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                            MySqlCommand yy = new MySqlCommand(ee, con);
+                            string odebrane = (string)yy.ExecuteScalar();
+                            if (odebrane == "[]")
+                            {
+                                odebrane = odebrane.Remove(odebrane.Length - 1, 1);
+                                odebrane = odebrane + zalogowany.Addfriend + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                MySqlCommand gggggg = new MySqlCommand();
+                                gggggg.CommandText = queee;
+                                gggggg.Connection = con;
+                                gggggg.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                odebrane = odebrane.Remove(odebrane.Length - 1, 1);
+                                odebrane = odebrane + "," + addfriend + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                MySqlCommand gggggg = new MySqlCommand();
+                                gggggg.CommandText = queee;
+                                gggggg.Connection = con;
+                                gggggg.ExecuteNonQuery();
+                            }
+                            Console.WriteLine("Wysłano zaproszenie do znajomych!");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        }
+                        else
+                        {
+                            oczekujace = oczekujace.Remove(oczekujace.Length - 1, 1);
+                            oczekujace = oczekujace + "," + addfriend + "]";
+                            string quee = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + owner + "'";
+                            MySqlCommand ggg = new MySqlCommand();
+                            ggg.CommandText = quee;
+                            ggg.Connection = con;
+                            ggg.ExecuteNonQuery();
+                            string ee = "select odebrane from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                            MySqlCommand yy = new MySqlCommand(ee, con);
+                            string odebrane = (string)yy.ExecuteScalar();
+                            if (odebrane == "[]")
+                            {
+                                odebrane = odebrane.Remove(odebrane.Length - 1, 1);
+                                odebrane = odebrane + zalogowany.Addfriend + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                MySqlCommand gggggg = new MySqlCommand();
+                                gggggg.CommandText = queee;
+                                gggggg.Connection = con;
+                                gggggg.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                odebrane = odebrane.Remove(odebrane.Length - 1, 1);
+                                odebrane = odebrane + "," + addfriend + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                MySqlCommand gggggg = new MySqlCommand();
+                                gggggg.CommandText = queee;
+                                gggggg.Connection = con;
+                                gggggg.ExecuteNonQuery();
+                            }
+                            Console.WriteLine("Wysłano zaproszenie do znajomych!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Już wysłałeś tej osobie zaproszenie do znajomych");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Ta osoba już jest twoim znajomym");
+                }
+            }
 
 
 
@@ -282,7 +461,12 @@ namespace ConsoleApp1
                 MySqlCommand gg = new MySqlCommand(que, con);
                 return (string)gg.ExecuteScalar();
             }
-
+            string getownerfromaddfriend(string addfriend)
+            {
+                string que = "select owner from users WHERE addfriend ='" + addfriend + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                return (string)gg.ExecuteScalar();
+            }
 
             //Usawianie na sql
             void setowner(string login, string password, ref bool wartowner)
@@ -295,6 +479,9 @@ namespace ConsoleApp1
                     ggg.CommandText = que;
                     ggg.Connection = con;
                     ggg.ExecuteNonQuery();
+                    string cmddText = "insert into znajomi(owner) values('" + s + "');";
+                    MySqlCommand cmddd = new MySqlCommand(cmddText, con);
+                    cmddd.ExecuteNonQuery();
                     Console.WriteLine("Usawiono ownera");
                     wartowner = true;
                 }
@@ -343,8 +530,6 @@ namespace ConsoleApp1
                 }
 
             }
-
-
 
 
             void settag(string login, string password, string tag, ref bool warttag, ref Uzytkownik zalogowany)
@@ -397,21 +582,152 @@ namespace ConsoleApp1
 
 
 
+            void rozdzielnickitag(string ciag, ref string nick, ref string tag)
+            {
+                for (int i = 0; i < ciag.IndexOf("#"); i++)
+                {
+                    nick = nick + ciag[i].ToString();
+                }
+                ciag = ciag.Remove(0, ciag.IndexOf("#"));
+                for (int i = 0; i < ciag.Length; i++)
+                {
+                    tag = tag + ciag[i].ToString();
+                }
+            }
+
+
+
+            void przyimijznajomego(string owner, string addfriend)
+            {
+                string quee = "select friends from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand znajomizalogowanegoo = new MySqlCommand(quee, con);
+                string znajomizalogowanego = (string)znajomizalogowanegoo.ExecuteScalar();
+                string wee = "select odebrane from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand odebranee = new MySqlCommand(wee, con);
+                string odebrane = (string)odebranee.ExecuteScalar();
+                string que = "select friends from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                MySqlCommand znajomidodawanegoo = new MySqlCommand(que, con);
+                string znajomidodawanego = (string)znajomidodawanegoo.ExecuteScalar();
+                string we = "select oczekujace from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                MySqlCommand oczekujacee = new MySqlCommand(we, con);
+                string oczekujace = (string)oczekujacee.ExecuteScalar();
+                if (znajomizalogowanego == "[]")
+                {
+                    znajomizalogowanego = znajomizalogowanego.Remove(znajomizalogowanego.Length - 1, 1);
+                    znajomizalogowanego = znajomizalogowanego + addfriend + "]";
+                }
+                else
+                {
+                    znajomizalogowanego = znajomizalogowanego.Remove(znajomizalogowanego.Length - 1, 1);
+                    znajomizalogowanego = znajomizalogowanego + "," + addfriend + "]";
+                }
+                if (odebrane.Contains("," + addfriend))
+                {
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend) - 1, addfriend.Length-1);
+                }
+                else if (odebrane.Contains(addfriend + ","))
+                {
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length);
+                }
+                else if (odebrane == "[" + addfriend + "]")
+                {
+                    odebrane = "[]";
+
+                }
 
 
 
 
 
+                if (znajomidodawanego == "[]")
+                {
+                    znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length - 1, 1);
+                    znajomidodawanego = znajomidodawanego + zalogowany.Addfriend + "]";
+                }
+                else
+                {
+                    znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length - 1, 1);
+                    znajomidodawanego = znajomidodawanego + "," + zalogowany.Addfriend + "]";
+                }
+                if (oczekujace.Contains("," + zalogowany.Addfriend))
+                {
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend) - 1, zalogowany.Addfriend.Length-1);
+                }
+                else if (oczekujace.Contains(zalogowany.Addfriend + ","))
+                {
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length);
+                }
+                string k = "UPDATE `znajomi` SET `friends`= '" + znajomizalogowanego + "' WHERE owner ='" + zalogowany.Owner + "'";
+                MySqlCommand f = new MySqlCommand();
+                f.CommandText = k;
+                f.Connection = con;
+                f.ExecuteNonQuery();
+
+                string kk = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + zalogowany.Owner + "'";
+                MySqlCommand ff = new MySqlCommand();
+                ff.CommandText = kk;
+                ff.Connection = con;
+                ff.ExecuteNonQuery();
+
+                string kkk = "UPDATE `znajomi` SET `friends`= '" + znajomidodawanego + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                MySqlCommand fff = new MySqlCommand();
+                fff.CommandText = kkk;
+                fff.Connection = con;
+                fff.ExecuteNonQuery();
+
+                string kkkk = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                MySqlCommand ffff = new MySqlCommand();
+                ffff.CommandText = kkkk;
+                ffff.Connection = con;
+                ffff.ExecuteNonQuery();
 
 
 
 
+            }
 
+            void usuniprosbeoznajomego(string owner, string addfriend)
+            {
+                string wee = "select odebrane from znajomi WHERE owner ='" + owner + "'";
+                MySqlCommand odebranee = new MySqlCommand(wee, con);
+                string odebrane = (string)odebranee.ExecuteScalar();
+                string we = "select oczekujace from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                MySqlCommand oczekujacee = new MySqlCommand(we, con);
+                string oczekujace = (string)oczekujacee.ExecuteScalar();
+                if (odebrane.Contains("," + addfriend))
+                {
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend) - 1, addfriend.Length - 1);
+                }
+                else if (odebrane.Contains(addfriend + ","))
+                {
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length);
+                }
+                else if (odebrane == "[" + addfriend + "]")
+                {
+                    odebrane = "[]";
 
+                }
+                if (oczekujace.Contains("," + zalogowany.Addfriend))
+                {
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend) - 1, zalogowany.Addfriend.Length - 1);
+                }
+                else if (oczekujace.Contains(zalogowany.Addfriend + ","))
+                {
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length);
+                }
 
+                string kk = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + zalogowany.Owner + "'";
+                MySqlCommand ff = new MySqlCommand();
+                ff.CommandText = kk;
+                ff.Connection = con;
+                ff.ExecuteNonQuery();
 
-
-
+                string kkkk = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                MySqlCommand ffff = new MySqlCommand();
+                ffff.CommandText = kkkk;
+                ffff.Connection = con;
+                ffff.ExecuteNonQuery();
+            }
 
 
 
@@ -432,8 +748,9 @@ namespace ConsoleApp1
                     zalogowany.Tag = gettag(login, password);
                     zalogowany.Addfriend = getnick(login, password) + gettag(login, password);
                     zalogowany.Owner = getowner(login, password);
-                    Console.WriteLine($"Zalogowano pomyślnie");
+                    List<string> znajomi = new List<string>() { };
 
+                    Console.WriteLine($"Zalogowano pomyślnie");
                     while (true == true)
                     {
                         Console.Clear();
@@ -441,8 +758,13 @@ namespace ConsoleApp1
                         Console.WriteLine($"Nick:{nazwakonta}");
                         Console.WriteLine("Zmień nick -- 1");
                         Console.WriteLine("Zmień tag -- 2");
+                        Console.WriteLine("Dodaj znajomego -- 3");
+                        Console.WriteLine("Wysłane zaposzenia do znajomych -- 4");
+                        Console.WriteLine("Oczekujace zaposzenia do znajomych -- 5");
+                        Console.WriteLine("Wylogowanie -- 6");
+
                         Console.WriteLine("Lista znajomych: ");
-                        zaladujznajomych(zalogowany.Owner);
+                        zaladujznajomych(zalogowany.Owner, ref znajomi);
 
 
                         string aktyw = Console.ReadLine();
@@ -450,7 +772,7 @@ namespace ConsoleApp1
                         {
                             Console.Write("Podaj nowy nick:");
                             string newnick = Console.ReadLine();
-                            bool op=true;
+                            bool op = true;
                             setnick(login, password, newnick, ref op, ref zalogowany);
                             Console.ReadLine();
                         }
@@ -461,6 +783,69 @@ namespace ConsoleApp1
                             bool op = true;
                             settag(login, password, newtag, ref op, ref zalogowany);
                             Console.ReadLine();
+                        }
+                        else if (aktyw == "3")
+                        {
+                            Console.Write("Podaj nick i tag znajomego:");
+                            string newfriend = Console.ReadLine();
+                            string nick="", tag="";
+
+                            rozdzielnickitag(newfriend, ref nick, ref tag);
+                            if (!nickandtagexist(nick, tag))
+                            {
+                                if(!(newfriend == zalogowany.Addfriend))
+                                {
+                                    dodajznajomego(zalogowany.Owner, newfriend);
+
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Nie możesz sam siebie doać do znajomych");
+                                }
+                                Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nie istnieje konto o takim nicku lub tagu!");
+                                Console.ReadLine();
+                            }
+
+                        }
+                        else if (aktyw == "4")
+                        {
+                            Console.WriteLine("Zaproszenia które czekają na przyjęcie:");
+                            List<string> zaproszenia = new List<string>() { };
+                            zaposzeniadoznajomych(zalogowany.Owner, ref zaproszenia);
+                            Console.ReadLine();
+                        }
+                        else if (aktyw == "5")
+                        {
+                            Console.WriteLine("Oczekujące zaproszenia do znajomych [T--PRZYJĘCIE/N--Odrzucenie]:");
+                            List<string> doobioru = new List<string>() { };
+                            zaproszeniadoodbioru(zalogowany.Owner, ref doobioru);
+                            int j = 1;
+                            Console.Write("Wybierz osobę:");
+                            string indeks = Console.ReadLine();
+                            Console.Write("T aby przyjąć N aby odrzucić:");
+                            string warunek = Console.ReadLine();
+                            foreach (var kandydat in doobioru)
+                            {
+                                if(j.ToString() == indeks && warunek == "T")
+                                {
+                                    przyimijznajomego(zalogowany.Owner, kandydat.ToString());
+                                    break;
+                                }
+                                else if (j.ToString() == indeks && warunek == "N")
+                                {
+                                    usuniprosbeoznajomego(zalogowany.Owner, kandydat.ToString());
+                                }
+                            j++;
+                            } 
+
+                        }
+                        else if (aktyw == "6")
+                        {
+                            return;
                         }
                     }
                 }
@@ -503,6 +888,7 @@ namespace ConsoleApp1
                     string cmdText = "insert into users(login,haslo) values('" + login + "','" + password + "');";
                     MySqlCommand cmdd = new MySqlCommand(cmdText, con);
                     cmdd.ExecuteNonQuery();
+;
                     bool wartnick = false, warttag = false, wartowner = false;
                     setnick(login, password, nick, ref wartnick, ref zalogowany);
                     settag(login, password, losujtag(), ref warttag, ref zalogowany);
