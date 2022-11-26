@@ -350,7 +350,7 @@ namespace ConsoleApp1
                             else
                             {
                                 odebrane = odebrane.Remove(odebrane.Length - 1, 1);
-                                odebrane = odebrane + "," + addfriend + "]";
+                                odebrane = odebrane + "," + zalogowany.Addfriend + "]";
                                 string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
                                 MySqlCommand gggggg = new MySqlCommand();
                                 gggggg.CommandText = queee;
@@ -494,41 +494,47 @@ namespace ConsoleApp1
 
             void setnick(string login, string password, string nick, ref bool wartnick, ref Uzytkownik zalogowany)
             {
-                string re = "select tag from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                MySqlCommand h = new MySqlCommand(re, con);
-                string tag = (string)h.ExecuteScalar();
-                if (nickandtagexist(nick, tag))
+                if(nick != "")
                 {
-                    string que = "UPDATE `users` SET `nick`= '" + nick + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand ggg = new MySqlCommand();
-                    ggg.CommandText = que;
-                    ggg.Connection = con;
-                    ggg.ExecuteNonQuery();
-                    Console.WriteLine("Zmieniono nick");
+                    string re = "select tag from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                    MySqlCommand h = new MySqlCommand(re, con);
+                    string tag = (string)h.ExecuteScalar();
+                    if (nickandtagexist(nick, tag))
+                    {
+                        string que = "UPDATE `users` SET `nick`= '" + nick + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                        MySqlCommand ggg = new MySqlCommand();
+                        ggg.CommandText = que;
+                        ggg.Connection = con;
+                        ggg.ExecuteNonQuery();
+                        Console.WriteLine("Zmieniono nick");
 
 
 
-                    string gh = "select nick from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand hj = new MySqlCommand(gh, con);
-                    string nickk = (string)hj.ExecuteScalar();
-                    string ghh = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
-                    MySqlCommand hh = new MySqlCommand(ghh, con);
-                    string tagg = (string)hh.ExecuteScalar();
-                    string addfriend = nickk + tagg;
-                    string quee = "UPDATE `users` SET `addfriend`= '" + addfriend + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
-                    MySqlCommand gggg = new MySqlCommand();
-                    gggg.CommandText = quee;
-                    gggg.Connection = con;
-                    gggg.ExecuteNonQuery();
-                    wartnick = true;
-                    zalogowany.Nick = nick;
+                        string gh = "select nick from users WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                        MySqlCommand hj = new MySqlCommand(gh, con);
+                        string nickk = (string)hj.ExecuteScalar();
+                        string ghh = "select tag from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
+                        MySqlCommand hh = new MySqlCommand(ghh, con);
+                        string tagg = (string)hh.ExecuteScalar();
+                        string addfriend = nickk + tagg;
+                        string quee = "UPDATE `users` SET `addfriend`= '" + addfriend + "' WHERE `login`= '" + login + "'AND`haslo`= '" + password + "'; ";
+                        MySqlCommand gggg = new MySqlCommand();
+                        gggg.CommandText = quee;
+                        gggg.Connection = con;
+                        gggg.ExecuteNonQuery();
+                        wartnick = true;
+                        zalogowany.Nick = nick;
 
+                    }
+                    else
+                    {
+                        Console.WriteLine("Taki nick istnieje przy koncie o takim samym tagu");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Taki nick istnieje przy koncie o takim samym tagu");
+                    Console.WriteLine("Nie podano nicku");
                 }
-
             }
 
 
@@ -584,14 +590,17 @@ namespace ConsoleApp1
 
             void rozdzielnickitag(string ciag, ref string nick, ref string tag)
             {
-                for (int i = 0; i < ciag.IndexOf("#"); i++)
+                if (nick != "")
                 {
-                    nick = nick + ciag[i].ToString();
-                }
-                ciag = ciag.Remove(0, ciag.IndexOf("#"));
-                for (int i = 0; i < ciag.Length; i++)
-                {
-                    tag = tag + ciag[i].ToString();
+                    for (int i = 0; i < ciag.IndexOf("#"); i++)
+                    {
+                        nick = nick + ciag[i].ToString();
+                    }
+                    ciag = ciag.Remove(0, ciag.IndexOf("#"));
+                    for (int i = 0; i < ciag.Length; i++)
+                    {
+                        tag = tag + ciag[i].ToString();
+                    }
                 }
             }
 
@@ -627,7 +636,7 @@ namespace ConsoleApp1
                 }
                 else if (odebrane.Contains(addfriend + ","))
                 {
-                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length);
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length+1);
                 }
                 else if (odebrane == "[" + addfriend + "]")
                 {
@@ -646,17 +655,22 @@ namespace ConsoleApp1
                 }
                 else
                 {
-                    znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length - 1, 1);
+                    znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length-1, 1);
                     znajomidodawanego = znajomidodawanego + "," + zalogowany.Addfriend + "]";
                 }
-                if (oczekujace.Contains("," + zalogowany.Addfriend))
+                if (oczekujace == ("[" + zalogowany.Addfriend + "]"))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend) - 1, zalogowany.Addfriend.Length-1);
+                    oczekujace = "[]";
+                }
+                else if (oczekujace.Contains("," + zalogowany.Addfriend))
+                {
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend)-1, zalogowany.Addfriend.Length+1);
                 }
                 else if (oczekujace.Contains(zalogowany.Addfriend + ","))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length);
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length+1);
                 }
+
                 string k = "UPDATE `znajomi` SET `friends`= '" + znajomizalogowanego + "' WHERE owner ='" + zalogowany.Owner + "'";
                 MySqlCommand f = new MySqlCommand();
                 f.CommandText = k;
@@ -681,9 +695,6 @@ namespace ConsoleApp1
                 ffff.Connection = con;
                 ffff.ExecuteNonQuery();
 
-
-
-
             }
 
             void usuniprosbeoznajomego(string owner, string addfriend)
@@ -694,27 +705,34 @@ namespace ConsoleApp1
                 string we = "select oczekujace from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
                 MySqlCommand oczekujacee = new MySqlCommand(we, con);
                 string oczekujace = (string)oczekujacee.ExecuteScalar();
-                if (odebrane.Contains("," + addfriend))
+                if (odebrane == "[" + addfriend + "]")
                 {
-                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend) - 1, addfriend.Length - 1);
+                    odebrane = "[]";
+                }
+                else if (odebrane.Contains("," + addfriend))
+                {
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend) - 1, addfriend.Length + 1);
                 }
                 else if (odebrane.Contains(addfriend + ","))
                 {
-                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length);
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length + 1);
                 }
-                else if (odebrane == "[" + addfriend + "]")
-                {
-                    odebrane = "[]";
 
-                }
-                if (oczekujace.Contains("," + zalogowany.Addfriend))
+
+
+                if (oczekujace == ("[" + zalogowany.Addfriend + "]"))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend) - 1, zalogowany.Addfriend.Length - 1);
+                    oczekujace = "[]";
+                }
+                else if (oczekujace.Contains("," + zalogowany.Addfriend))
+                {
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend) - 1, zalogowany.Addfriend.Length + 1);
                 }
                 else if (oczekujace.Contains(zalogowany.Addfriend + ","))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length);
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length + 1);
                 }
+
 
                 string kk = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + zalogowany.Owner + "'";
                 MySqlCommand ff = new MySqlCommand();
@@ -736,6 +754,7 @@ namespace ConsoleApp1
 
             void Logowanie(string login, string password)
             {
+                List<string> znajomi = new List<string>() { };
 
                 string query = "select count(*) from users WHERE login ='" + login + "' AND haslo ='" + password + "'";
                 MySqlCommand cmd = new MySqlCommand(query, con);
@@ -748,7 +767,6 @@ namespace ConsoleApp1
                     zalogowany.Tag = gettag(login, password);
                     zalogowany.Addfriend = getnick(login, password) + gettag(login, password);
                     zalogowany.Owner = getowner(login, password);
-                    List<string> znajomi = new List<string>() { };
 
                     Console.WriteLine($"Zalogowano pomyślnie");
                     while (true == true)
@@ -761,9 +779,11 @@ namespace ConsoleApp1
                         Console.WriteLine("Dodaj znajomego -- 3");
                         Console.WriteLine("Wysłane zaposzenia do znajomych -- 4");
                         Console.WriteLine("Oczekujace zaposzenia do znajomych -- 5");
-                        Console.WriteLine("Wylogowanie -- 6");
+                        Console.WriteLine("Czaty ze znajomymi -- 6");
+                        Console.WriteLine("Wylogowanie -- 7");
 
                         Console.WriteLine("Lista znajomych: ");
+                        znajomi.Clear();
                         zaladujznajomych(zalogowany.Owner, ref znajomi);
 
 
@@ -793,20 +813,20 @@ namespace ConsoleApp1
                             rozdzielnickitag(newfriend, ref nick, ref tag);
                             if (!nickandtagexist(nick, tag))
                             {
-                                if(!(newfriend == zalogowany.Addfriend))
+                                Console.WriteLine("Nie istnieje konto o takim nicku lub tagu!");
+                                Console.ReadLine();
+                            }
+                            else
+                            {
+                                if (!(newfriend == zalogowany.Addfriend))
                                 {
                                     dodajznajomego(zalogowany.Owner, newfriend);
 
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Nie możesz sam siebie doać do znajomych");
+                                    Console.WriteLine("Nie możesz sam siebie dodać do znajomych");
                                 }
-                                Console.ReadLine();
-                            }
-                            else
-                            {
-                                Console.WriteLine("Nie istnieje konto o takim nicku lub tagu!");
                                 Console.ReadLine();
                             }
 
@@ -844,6 +864,13 @@ namespace ConsoleApp1
 
                         }
                         else if (aktyw == "6")
+                        {
+                            Console.WriteLine("Lista znajomych: ");
+                            znajomi.Clear();
+                            zaladujznajomych(zalogowany.Owner, ref znajomi);
+                            Console.ReadLine();
+                        }
+                        else if (aktyw == "7")
                         {
                             return;
                         }
@@ -885,19 +912,43 @@ namespace ConsoleApp1
                 int Count = int.Parse(cmd.ExecuteScalar() + "");
                 if (Count == 0)
                 {
-                    string cmdText = "insert into users(login,haslo) values('" + login + "','" + password + "');";
-                    MySqlCommand cmdd = new MySqlCommand(cmdText, con);
-                    cmdd.ExecuteNonQuery();
-;
-                    bool wartnick = false, warttag = false, wartowner = false;
-                    setnick(login, password, nick, ref wartnick, ref zalogowany);
-                    settag(login, password, losujtag(), ref warttag, ref zalogowany);
-                    if (warttag==true && wartnick == true)
+                    if (login != "")
                     {
-                        while (wartowner != true)
+                        if (password != "")
                         {
-                            setowner(login, password, ref wartowner);
+                            if (nick != "")
+                            {
+                                string cmdText = "insert into users(login,haslo) values('" + login + "','" + password + "');";
+                                MySqlCommand cmdd = new MySqlCommand(cmdText, con);
+                                cmdd.ExecuteNonQuery();
+                                ;
+                                bool wartnick = false, warttag = false, wartowner = false;
+                                setnick(login, password, nick, ref wartnick, ref zalogowany);
+                                settag(login, password, losujtag(), ref warttag, ref zalogowany);
+                                if (warttag == true && wartnick == true)
+                                {
+                                    while (wartowner != true)
+                                    {
+                                        setowner(login, password, ref wartowner);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nie podano nicku!");
+                                Console.ReadLine();
+                            }
                         }
+                        else
+                        {
+                            Console.WriteLine("Nie podano hasła!");
+                            Console.ReadLine();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Nie podano loginu!");
+                        Console.ReadLine();
                     }
                 }
                 else
