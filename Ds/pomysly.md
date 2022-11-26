@@ -1,6 +1,4 @@
-﻿
-odczytywania
-
+﻿czat zrobić ludzi
 
             void wczytajczat()
             {
