@@ -10,6 +10,7 @@ using Org.BouncyCastle.Utilities.Collections;
 using System.Security.Policy;
 using Org.BouncyCastle.Crypto.Modes.Gcm;
 using System.Diagnostics.SymbolStore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ConsoleApp1
 {
@@ -272,6 +273,158 @@ namespace ConsoleApp1
 
 
 
+
+
+
+            /*void stworzenieczatu(string owner, string ownerznajomego)
+            { 
+                if (Int64.Parse(owner) > Int64.Parse(ownerznajomego))
+                {
+                string cmdText = "insert into czaty(osoba1,osoba2, numertekstu) values('" + zalogowany.Owner + "','" + ownerznajomego + "','0');";
+                MySqlCommand cmdd = new MySqlCommand(cmdText, con);
+                cmdd.ExecuteNonQuery();
+                }
+                else if (Int64.Parse(owner) < Int64.Parse(ownerznajomego))
+                {
+                string cmdText = "insert into czaty(osoba1,osoba2, numertekstu) values('" + ownerznajomego + "','" + zalogowany.Owner + "','0');";
+                MySqlCommand cmdd = new MySqlCommand(cmdText, con);
+                cmdd.ExecuteNonQuery();
+                }
+            }*/
+
+            void dodaniewiadomosci(string owner, string ownerznajomego, string tekst, string ownerwysylajacy)
+            {
+                if (Int64.Parse(owner) > Int64.Parse(ownerznajomego))
+                {
+                    string query = "select count(*) from czaty WHERE osoba1 ='" + zalogowany.Owner + "' AND osoba2 ='" + ownerznajomego + "'";
+                    MySqlCommand cm = new MySqlCommand(query, con);
+                    int ostatniawiadomosci = int.Parse(cm.ExecuteScalar() + "");
+
+                    string cmdText = "insert into czaty(osoba1,osoba2, tekst, numertekstu, ktowysyla) values('" + zalogowany.Owner + "','" + ownerznajomego + "','" + tekst + "','" + ostatniawiadomosci + "','" + ownerwysylajacy + "');";
+                    MySqlCommand cmdd = new MySqlCommand(cmdText, con);
+                    cmdd.ExecuteNonQuery();
+                }
+                else if (Int64.Parse(owner) < Int64.Parse(ownerznajomego))
+                {
+                    string query = "select count(*) from czaty WHERE osoba1 ='" + ownerznajomego + "' AND osoba2 ='" + zalogowany.Owner + "'";
+                    MySqlCommand cmd = new MySqlCommand(query, con);
+                    int ostatniawiadomosci = int.Parse(cmd.ExecuteScalar() + "");
+
+
+                    string cmdTextt = "insert into czaty(osoba1,osoba2, tekst, numertekstu, ktowysyla) values('" + ownerznajomego + "','" + zalogowany.Owner + "','" + tekst + "','" + ostatniawiadomosci + "','" + ownerwysylajacy + "');";
+                    MySqlCommand cmddd = new MySqlCommand(cmdTextt, con);
+                    cmddd.ExecuteNonQuery();
+                }
+            }
+
+
+            void ladowanieczatu(string owner, string ownerznajomego)
+            {
+                if (Int64.Parse(owner) > Int64.Parse(ownerznajomego))
+                {
+                    string query = "select count(*) from czaty WHERE osoba1 ='" + zalogowany.Owner + "' AND osoba2 ='" + ownerznajomego + "'";
+                    MySqlCommand cm = new MySqlCommand(query, con);
+                    int ostatniawiadomosci = int.Parse(cm.ExecuteScalar() + "");
+                    ostatniawiadomosci--;
+                    var wiadomosci = new List<string> { };
+                    for (int i = ostatniawiadomosci; i >= 0; i--)
+                    {
+                        string sql = "SELECT ktowysyla FROM czaty WHERE osoba1 ='" + zalogowany.Owner + "' AND osoba2 ='" + ownerznajomego + "' AND numertekstu ='" + i + "'";
+                        MySqlCommand gg = new MySqlCommand(sql, con);
+                        string osoba = (string)gg.ExecuteScalar();
+
+
+                        string que = "SELECT tekst FROM czaty WHERE osoba1 ='" + zalogowany.Owner + "' AND osoba2 ='" + ownerznajomego + "' AND numertekstu ='" + i + "'";
+                        MySqlCommand g = new MySqlCommand(que, con);
+                        string text = (string)g.ExecuteScalar();
+
+                        string s = getaddfriendfromowner(osoba) + ":" + text;
+                        wiadomosci.Add(s);
+                    }
+                    wiadomosci.Reverse();
+                    foreach (var sss in wiadomosci)
+                    {
+                        Console.WriteLine(sss);
+                    }
+                }
+                else if (Int64.Parse(owner) < Int64.Parse(ownerznajomego))
+                {
+                    string query = "select count(*) from czaty WHERE osoba1 ='" + ownerznajomego + "' AND osoba2 ='" + zalogowany.Owner + "'";
+                    MySqlCommand cm = new MySqlCommand(query, con);
+                    int ostatniawiadomosci = int.Parse(cm.ExecuteScalar() + "");
+                    ostatniawiadomosci--;
+                    var wiadomosci = new List<string> { };
+                    for (int i = ostatniawiadomosci; i >= 0; i--)
+                    {
+                        string sql = "SELECT ktowysyla FROM czaty WHERE osoba1 ='" + ownerznajomego + "' AND osoba2 ='" + zalogowany.Owner + "' AND numertekstu ='" + i + "'";
+                        MySqlCommand gg = new MySqlCommand(sql, con);
+                        string osoba = (string)gg.ExecuteScalar();
+
+
+                        string que = "SELECT tekst FROM czaty WHERE osoba1 ='" + ownerznajomego + "' AND osoba2 ='" + zalogowany.Owner + "' AND numertekstu ='" + i + "'";
+                        MySqlCommand g = new MySqlCommand(que, con);
+                        string text = (string)g.ExecuteScalar();
+
+                        string s = getaddfriendfromowner(osoba) + ":" + text;
+                        wiadomosci.Add(s);
+                    }
+                    wiadomosci.Reverse();
+                    foreach (var sss in wiadomosci)
+                    {
+                        Console.WriteLine(sss);
+                    }
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             void dodajznajomego(string owner, string addfriend)
             {
                 string que = "select friends from znajomi WHERE owner ='" + owner + "'";
@@ -426,7 +579,12 @@ namespace ConsoleApp1
                 MySqlCommand gg = new MySqlCommand(que, con);
                 return (string)gg.ExecuteScalar();
             }
-
+            string getaddfriendfromowner(string owner)
+            {
+                string que = "select addfriend from users WHERE owner ='" + owner + "'";
+                MySqlCommand gg = new MySqlCommand(que, con);
+                return (string)gg.ExecuteScalar();
+            }
             //Usawianie na sql
             void setowner(string login, string password, ref bool wartowner)
             {
@@ -812,6 +970,7 @@ namespace ConsoleApp1
                                 if(j.ToString() == indeks && warunek == "T")
                                 {
                                     przyimijznajomego(zalogowany.Owner, kandydat.ToString());
+                                    //stworzenieczatu(zalogowany.Owner, getownerfromaddfriend(kandydat.ToString()));
                                     break;
                                 }
                                 else if (j.ToString() == indeks && warunek == "N")
@@ -827,7 +986,39 @@ namespace ConsoleApp1
                             Console.WriteLine("Lista znajomych: ");
                             znajomi.Clear();
                             zaladujznajomych(zalogowany.Owner, ref znajomi);
-                            Console.ReadLine();
+                            Console.Write("Wybierz osobę:");
+                            string indeks = Console.ReadLine();
+                            int j = 1;
+                            foreach (var kandydat in znajomi)
+                            {
+                                if (j.ToString() == indeks)
+                                {
+                                    bool start = true;
+                                    while(true)
+                                    {
+                                        Console.Clear();    
+                                        Console.WriteLine("Znajomy:" + kandydat);
+                                        ladowanieczatu(zalogowany.Owner, getownerfromaddfriend(kandydat));
+                                        Console.Write(zalogowany.Addfriend + ":");
+
+                                        string tekst = Console.ReadLine();  
+
+                                        if(tekst != "exit")
+                                        {
+                                            dodaniewiadomosci(zalogowany.Owner, getownerfromaddfriend(kandydat.ToString()), tekst, zalogowany.Owner);
+                                        }
+                                        else if (tekst == "exit")
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                                j++;
+                            }
+
+
+
+
                         }
                         else if (aktyw == "7")
                         {
@@ -880,7 +1071,6 @@ namespace ConsoleApp1
                                 string cmdText = "insert into users(login,haslo) values('" + login + "','" + password + "');";
                                 MySqlCommand cmdd = new MySqlCommand(cmdText, con);
                                 cmdd.ExecuteNonQuery();
-                                ;
                                 bool wartnick = false, warttag = false, wartowner = false;
                                 setnick(login, password, nick, ref wartnick, ref zalogowany);
                                 settag(login, password, losujtag(), ref warttag, ref zalogowany);

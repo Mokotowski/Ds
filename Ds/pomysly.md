@@ -1,4 +1,14 @@
 ﻿czat zrobić ludzi
+przy zmianie nicku i tagu psują się znajomi 
+
+
+
+
+
+
+
+
+
 
             void wczytajczat()
             {
