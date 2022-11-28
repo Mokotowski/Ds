@@ -11,6 +11,7 @@ using System.Security.Policy;
 using Org.BouncyCastle.Crypto.Modes.Gcm;
 using System.Diagnostics.SymbolStore;
 using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.Intrinsics.X86;
 
 namespace ConsoleApp1
 {
@@ -326,8 +327,7 @@ namespace ConsoleApp1
                     MySqlCommand cm = new MySqlCommand(query, con);
                     int ostatniawiadomosci = int.Parse(cm.ExecuteScalar() + "");
                     ostatniawiadomosci--;
-                    var wiadomosci = new List<string> { };
-                    for (int i = ostatniawiadomosci; i >= 0; i--)
+                    for (int i = 0; i <= ostatniawiadomosci; i++)
                     {
                         string sql = "SELECT ktowysyla FROM czaty WHERE osoba1 ='" + zalogowany.Owner + "' AND osoba2 ='" + ownerznajomego + "' AND numertekstu ='" + i + "'";
                         MySqlCommand gg = new MySqlCommand(sql, con);
@@ -337,14 +337,7 @@ namespace ConsoleApp1
                         string que = "SELECT tekst FROM czaty WHERE osoba1 ='" + zalogowany.Owner + "' AND osoba2 ='" + ownerznajomego + "' AND numertekstu ='" + i + "'";
                         MySqlCommand g = new MySqlCommand(que, con);
                         string text = (string)g.ExecuteScalar();
-
-                        string s = getaddfriendfromowner(osoba) + ":" + text;
-                        wiadomosci.Add(s);
-                    }
-                    wiadomosci.Reverse();
-                    foreach (var sss in wiadomosci)
-                    {
-                        Console.WriteLine(sss);
+                        Console.WriteLine(getaddfriendfromowner(osoba) + ":" + text);
                     }
                 }
                 else if (Int64.Parse(owner) < Int64.Parse(ownerznajomego))
@@ -354,7 +347,7 @@ namespace ConsoleApp1
                     int ostatniawiadomosci = int.Parse(cm.ExecuteScalar() + "");
                     ostatniawiadomosci--;
                     var wiadomosci = new List<string> { };
-                    for (int i = ostatniawiadomosci; i >= 0; i--)
+                    for (int i = 0; i <= ostatniawiadomosci; i++)
                     {
                         string sql = "SELECT ktowysyla FROM czaty WHERE osoba1 ='" + ownerznajomego + "' AND osoba2 ='" + zalogowany.Owner + "' AND numertekstu ='" + i + "'";
                         MySqlCommand gg = new MySqlCommand(sql, con);
@@ -364,14 +357,7 @@ namespace ConsoleApp1
                         string que = "SELECT tekst FROM czaty WHERE osoba1 ='" + ownerznajomego + "' AND osoba2 ='" + zalogowany.Owner + "' AND numertekstu ='" + i + "'";
                         MySqlCommand g = new MySqlCommand(que, con);
                         string text = (string)g.ExecuteScalar();
-
-                        string s = getaddfriendfromowner(osoba) + ":" + text;
-                        wiadomosci.Add(s);
-                    }
-                    wiadomosci.Reverse();
-                    foreach (var sss in wiadomosci)
-                    {
-                        Console.WriteLine(sss);
+                        Console.WriteLine(getaddfriendfromowner(osoba) + ":" + text);
                     }
                 }
             }
@@ -973,16 +959,22 @@ namespace ConsoleApp1
                                         ladowanieczatu(zalogowany.Owner, kandydat);
                                         Console.Write(zalogowany.Addfriend + ":");
 
-                                        string tekst = Console.ReadLine();  
+                                        string tekst = Console.ReadLine();
 
-                                        if(tekst != "exit")
-                                        {
-                                            dodaniewiadomosci(zalogowany.Owner, kandydat, tekst, zalogowany.Owner);
-                                        }
-                                        else if (tekst == "exit")
+
+                                        if (tekst == "exit")
                                         {
                                             break;
                                         }
+                                        else if (tekst == "" || tekst == " ")
+                                        {
+                                        }
+                                        else
+                                        {
+                                            dodaniewiadomosci(zalogowany.Owner, kandydat, tekst, zalogowany.Owner);
+                                        }
+
+
                                     }
                                 }
                                 j++;
