@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 87.98.236.134:3306
--- Czas generowania: 26 Lis 2022, 16:16
+-- Czas generowania: 28 Lis 2022, 15:11
 -- Wersja serwera: 10.5.15-MariaDB-0+deb11u1
 -- Wersja PHP: 8.0.19
 
@@ -24,6 +24,20 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Struktura tabeli dla tabeli `czaty`
+--
+
+CREATE TABLE `czaty` (
+  `osoba1` varchar(36) NOT NULL,
+  `osoba2` varchar(36) NOT NULL,
+  `tekst` longtext NOT NULL,
+  `numertekstu` varchar(24) NOT NULL,
+  `ktowysyla` varchar(36) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Struktura tabeli dla tabeli `users`
 --
 
@@ -35,16 +49,6 @@ CREATE TABLE `users` (
   `addfriend` varchar(64) NOT NULL,
   `owner` varchar(36) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Zrzut danych tabeli `users`
---
-
-INSERT INTO `users` (`login`, `haslo`, `nick`, `tag`, `addfriend`, `owner`) VALUES
-('Dt', '123', 'Dante', '#56137', 'Dante#56137', '342835467215836564182781334846346147'),
-('Mk', '123', 'Mokotowski', '#51483', 'Mokotowski#51483', '548125817125131256876657528536361747'),
-('Bt', '123', 'Batir', '#98876', 'Batir#98876', '588165344723411428154584375543438655'),
-('Ku', '123', 'Kubanczyk', '#68043', 'Kubanczyk#68043', '813762336265413263331778626166856362');
 
 -- --------------------------------------------------------
 
@@ -58,16 +62,6 @@ CREATE TABLE `znajomi` (
   `oczekujace` varchar(2555) NOT NULL DEFAULT '[]',
   `odebrane` varchar(2555) NOT NULL DEFAULT '[]'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Zrzut danych tabeli `znajomi`
---
-
-INSERT INTO `znajomi` (`owner`, `friends`, `oczekujace`, `odebrane`) VALUES
-('342835467215836564182781334846346147', '[Mokotowski#51483]', '[]', '[]'),
-('548125817125131256876657528536361747', '[Dante#56137,Kubanczyk#68043]', '[]', '[]'),
-('588165344723411428154584375543438655', '[]', '[]', '[]'),
-('813762336265413263331778626166856362', '[Mokotowski#51483]', '[]', '[]');
 
 --
 -- Indeksy dla zrzutów tabel
