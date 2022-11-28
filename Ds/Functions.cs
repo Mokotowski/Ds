@@ -1,4 +1,0 @@
-﻿partial class Program
-{
-
-}

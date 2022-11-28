@@ -1,8 +1,8 @@
-﻿czat zrobić ludzi
-przy zmianie nicku i tagu psują się znajomi 
-
-
-
+﻿po przeniesieniu 
+zrobić usuwanie znajomych
+grupowe czaty 
+lepszy system logowania i rejestracji
+przy czatach wczytywanie części i przy skrolu do góry kolejnych
 
 
 [117633537855255743421883411886226823,472277527743874176425314222731788887]

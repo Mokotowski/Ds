@@ -383,48 +383,6 @@ namespace ConsoleApp1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             void dodajznajomego(string owner, string addfriend)
             {
                 string que = "select friends from znajomi WHERE owner ='" + owner + "'";
