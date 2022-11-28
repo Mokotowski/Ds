@@ -151,7 +151,7 @@ namespace ConsoleApp1
                 foreach (var znajomy in znajomi)
                 {
                     j++;
-                    Console.WriteLine(j+"."+znajomy);
+                    Console.WriteLine(j + "." + getaddfriendfromowner(znajomy));
                 }
 
             }
@@ -208,7 +208,7 @@ namespace ConsoleApp1
                 foreach (var znajomy in znajomi)
                 {
                     j++;
-                    Console.WriteLine(j + "." + znajomy);
+                    Console.WriteLine(j + "." + getaddfriendfromowner(znajomy));
                 }
 
             }
@@ -265,7 +265,7 @@ namespace ConsoleApp1
                 foreach (var znajomy in znajomi)
                 {
                     j++;
-                    Console.WriteLine(j + "." + znajomy);
+                    Console.WriteLine(j + "." + getaddfriendfromowner(znajomy));
                 }
 
             }
@@ -446,14 +446,14 @@ namespace ConsoleApp1
                             ggg.CommandText = quee;
                             ggg.Connection = con;
                             ggg.ExecuteNonQuery();
-                            string ee = "select odebrane from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                            string ee = "select odebrane from znajomi WHERE owner ='" + addfriend + "'";
                             MySqlCommand yy = new MySqlCommand(ee, con);
                             string odebrane = (string)yy.ExecuteScalar();
                             if (odebrane == "[]")
                             {
                                 odebrane = odebrane.Remove(odebrane.Length - 1, 1);
-                                odebrane = odebrane + zalogowany.Addfriend + "]";
-                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                odebrane = odebrane + zalogowany.Owner + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + addfriend + "'";
                                 MySqlCommand gggggg = new MySqlCommand();
                                 gggggg.CommandText = queee;
                                 gggggg.Connection = con;
@@ -462,8 +462,8 @@ namespace ConsoleApp1
                             else
                             {
                                 odebrane = odebrane.Remove(odebrane.Length - 1, 1);
-                                odebrane = odebrane + "," + zalogowany.Addfriend + "]";
-                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                odebrane = odebrane + "," + zalogowany.Owner + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + addfriend + "'";
                                 MySqlCommand gggggg = new MySqlCommand();
                                 gggggg.CommandText = queee;
                                 gggggg.Connection = con;
@@ -481,14 +481,14 @@ namespace ConsoleApp1
                             ggg.CommandText = quee;
                             ggg.Connection = con;
                             ggg.ExecuteNonQuery();
-                            string ee = "select odebrane from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                            string ee = "select odebrane from znajomi WHERE owner ='" + addfriend + "'";
                             MySqlCommand yy = new MySqlCommand(ee, con);
                             string odebrane = (string)yy.ExecuteScalar();
                             if (odebrane == "[]")
                             {
                                 odebrane = odebrane.Remove(odebrane.Length - 1, 1);
-                                odebrane = odebrane + zalogowany.Addfriend + "]";
-                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                odebrane = odebrane + zalogowany.Owner + "]";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + addfriend + "'";
                                 MySqlCommand gggggg = new MySqlCommand();
                                 gggggg.CommandText = queee;
                                 gggggg.Connection = con;
@@ -498,7 +498,7 @@ namespace ConsoleApp1
                             {
                                 odebrane = odebrane.Remove(odebrane.Length - 1, 1);
                                 odebrane = odebrane + "," + addfriend + "]";
-                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                                string queee = "UPDATE `znajomi` SET `odebrane`= '" + odebrane + "' WHERE owner ='" + addfriend + "'";
                                 MySqlCommand gggggg = new MySqlCommand();
                                 gggggg.CommandText = queee;
                                 gggggg.Connection = con;
@@ -532,7 +532,7 @@ namespace ConsoleApp1
             {
                 string ow = "";
                 Random generator = new Random();
-                for (int i = 0; i < 36; i++)
+                for (int i = 0; i < 18; i++)
                 {
                     ow = ow + $"{Convert.ToString((generator.Next(1, 9)))}";
                 }
@@ -731,10 +731,10 @@ namespace ConsoleApp1
                 string wee = "select odebrane from znajomi WHERE owner ='" + owner + "'";
                 MySqlCommand odebranee = new MySqlCommand(wee, con);
                 string odebrane = (string)odebranee.ExecuteScalar();
-                string que = "select friends from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                string que = "select friends from znajomi WHERE owner ='" + addfriend + "'";
                 MySqlCommand znajomidodawanegoo = new MySqlCommand(que, con);
                 string znajomidodawanego = (string)znajomidodawanegoo.ExecuteScalar();
-                string we = "select oczekujace from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                string we = "select oczekujace from znajomi WHERE owner ='" + addfriend + "'";
                 MySqlCommand oczekujacee = new MySqlCommand(we, con);
                 string oczekujace = (string)oczekujacee.ExecuteScalar();
                 if (znajomizalogowanego == "[]")
@@ -749,11 +749,11 @@ namespace ConsoleApp1
                 }
                 if (odebrane.Contains("," + addfriend))
                 {
-                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend) - 1, addfriend.Length-1);
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend) - 1, addfriend.Length - 1);
                 }
                 else if (odebrane.Contains(addfriend + ","))
                 {
-                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length+1);
+                    odebrane = odebrane.Remove(odebrane.IndexOf(addfriend), addfriend.Length + 1);
                 }
                 else if (odebrane == "[" + addfriend + "]")
                 {
@@ -768,24 +768,24 @@ namespace ConsoleApp1
                 if (znajomidodawanego == "[]")
                 {
                     znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length - 1, 1);
-                    znajomidodawanego = znajomidodawanego + zalogowany.Addfriend + "]";
+                    znajomidodawanego = znajomidodawanego + zalogowany.Owner + "]";
                 }
                 else
                 {
-                    znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length-1, 1);
-                    znajomidodawanego = znajomidodawanego + "," + zalogowany.Addfriend + "]";
+                    znajomidodawanego = znajomidodawanego.Remove(znajomidodawanego.Length - 1, 1);
+                    znajomidodawanego = znajomidodawanego + "," + zalogowany.Owner + "]";
                 }
-                if (oczekujace == ("[" + zalogowany.Addfriend + "]"))
+                if (oczekujace == ("[" + zalogowany.Owner + "]"))
                 {
                     oczekujace = "[]";
                 }
-                else if (oczekujace.Contains("," + zalogowany.Addfriend))
+                else if (oczekujace.Contains("," + zalogowany.Owner))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend)-1, zalogowany.Addfriend.Length+1);
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Owner) - 1, zalogowany.Owner.Length + 1);
                 }
-                else if (oczekujace.Contains(zalogowany.Addfriend + ","))
+                else if (oczekujace.Contains(zalogowany.Owner + ","))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length+1);
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Owner), zalogowany.Owner.Length + 1);
                 }
 
                 string k = "UPDATE `znajomi` SET `friends`= '" + znajomizalogowanego + "' WHERE owner ='" + zalogowany.Owner + "'";
@@ -800,13 +800,13 @@ namespace ConsoleApp1
                 ff.Connection = con;
                 ff.ExecuteNonQuery();
 
-                string kkk = "UPDATE `znajomi` SET `friends`= '" + znajomidodawanego + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                string kkk = "UPDATE `znajomi` SET `friends`= '" + znajomidodawanego + "' WHERE owner ='" + addfriend + "'";
                 MySqlCommand fff = new MySqlCommand();
                 fff.CommandText = kkk;
                 fff.Connection = con;
                 fff.ExecuteNonQuery();
 
-                string kkkk = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                string kkkk = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + addfriend + "'";
                 MySqlCommand ffff = new MySqlCommand();
                 ffff.CommandText = kkkk;
                 ffff.Connection = con;
@@ -819,7 +819,7 @@ namespace ConsoleApp1
                 string wee = "select odebrane from znajomi WHERE owner ='" + owner + "'";
                 MySqlCommand odebranee = new MySqlCommand(wee, con);
                 string odebrane = (string)odebranee.ExecuteScalar();
-                string we = "select oczekujace from znajomi WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                string we = "select oczekujace from znajomi WHERE owner ='" + addfriend + "'";
                 MySqlCommand oczekujacee = new MySqlCommand(we, con);
                 string oczekujace = (string)oczekujacee.ExecuteScalar();
                 if (odebrane == "[" + addfriend + "]")
@@ -837,17 +837,17 @@ namespace ConsoleApp1
 
 
 
-                if (oczekujace == ("[" + zalogowany.Addfriend + "]"))
+                if (oczekujace == ("[" + zalogowany.Owner + "]"))
                 {
                     oczekujace = "[]";
                 }
-                else if (oczekujace.Contains("," + zalogowany.Addfriend))
+                else if (oczekujace.Contains("," + zalogowany.Owner))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend) - 1, zalogowany.Addfriend.Length + 1);
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Owner) - 1, zalogowany.Owner.Length + 1);
                 }
-                else if (oczekujace.Contains(zalogowany.Addfriend + ","))
+                else if (oczekujace.Contains(zalogowany.Owner + ","))
                 {
-                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Addfriend), zalogowany.Addfriend.Length + 1);
+                    oczekujace = oczekujace.Remove(oczekujace.IndexOf(zalogowany.Owner), zalogowany.Owner.Length + 1);
                 }
 
 
@@ -857,7 +857,7 @@ namespace ConsoleApp1
                 ff.Connection = con;
                 ff.ExecuteNonQuery();
 
-                string kkkk = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + getownerfromaddfriend(addfriend) + "'";
+                string kkkk = "UPDATE `znajomi` SET `oczekujace`= '" + oczekujace + "' WHERE owner ='" + addfriend + "'";
                 MySqlCommand ffff = new MySqlCommand();
                 ffff.CommandText = kkkk;
                 ffff.Connection = con;
@@ -911,6 +911,9 @@ namespace ConsoleApp1
                             string newnick = Console.ReadLine();
                             bool op = true;
                             setnick(login, password, newnick, ref op, ref zalogowany);
+                            zalogowany.Nick = getnick(login, password);
+                            zalogowany.Tag = gettag(login, password);
+                            zalogowany.Addfriend = getnick(login, password) + gettag(login, password);
                             Console.ReadLine();
                         }
                         else if (aktyw == "2")
@@ -919,6 +922,9 @@ namespace ConsoleApp1
                             string newtag = Console.ReadLine();
                             bool op = true;
                             settag(login, password, newtag, ref op, ref zalogowany);
+                            zalogowany.Nick = getnick(login, password);
+                            zalogowany.Tag = gettag(login, password);
+                            zalogowany.Addfriend = getnick(login, password) + gettag(login, password);
                             Console.ReadLine();
                         }
                         else if (aktyw == "3")
@@ -927,24 +933,32 @@ namespace ConsoleApp1
                             string newfriend = Console.ReadLine();
                             string nick="", tag="";
 
-                            rozdzielnickitag(newfriend, ref nick, ref tag);
-                            if (!nickandtagexist(nick, tag))
+                            if (newfriend != "")
                             {
-                                Console.WriteLine("Nie istnieje konto o takim nicku lub tagu!");
-                                Console.ReadLine();
-                            }
-                            else
-                            {
-                                if (!(newfriend == zalogowany.Addfriend))
+                                rozdzielnickitag(newfriend, ref nick, ref tag);
+                                if (!nickandtagexist(nick, tag))
                                 {
-                                    dodajznajomego(zalogowany.Owner, newfriend);
-
+                                    Console.WriteLine("Nie istnieje konto o takim nicku lub tagu!");
+                                    Console.ReadLine();
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Nie możesz sam siebie dodać do znajomych");
+                                    if (!(newfriend == zalogowany.Addfriend))
+                                    {
+                                        dodajznajomego(zalogowany.Owner, getownerfromaddfriend(newfriend));
+
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Nie możesz sam siebie dodać do znajomych");
+                                    }
+                                    Console.ReadLine();
                                 }
-                                Console.ReadLine();
+                            }
+                            else if (newfriend == "")
+                            {
+                                    Console.WriteLine("Nie podano poprawnej nazwy konta");
+                                    Console.ReadLine();
                             }
 
                         }
@@ -969,13 +983,13 @@ namespace ConsoleApp1
                             {
                                 if(j.ToString() == indeks && warunek == "T")
                                 {
-                                    przyimijznajomego(zalogowany.Owner, kandydat.ToString());
+                                    przyimijznajomego(zalogowany.Owner, kandydat);
                                     //stworzenieczatu(zalogowany.Owner, getownerfromaddfriend(kandydat.ToString()));
                                     break;
                                 }
                                 else if (j.ToString() == indeks && warunek == "N")
                                 {
-                                    usuniprosbeoznajomego(zalogowany.Owner, kandydat.ToString());
+                                    usuniprosbeoznajomego(zalogowany.Owner, kandydat);
                                 }
                             j++;
                             } 
@@ -997,15 +1011,15 @@ namespace ConsoleApp1
                                     while(true)
                                     {
                                         Console.Clear();    
-                                        Console.WriteLine("Znajomy:" + kandydat);
-                                        ladowanieczatu(zalogowany.Owner, getownerfromaddfriend(kandydat));
+                                        Console.WriteLine("Znajomy:" + getaddfriendfromowner(kandydat));
+                                        ladowanieczatu(zalogowany.Owner, kandydat);
                                         Console.Write(zalogowany.Addfriend + ":");
 
                                         string tekst = Console.ReadLine();  
 
                                         if(tekst != "exit")
                                         {
-                                            dodaniewiadomosci(zalogowany.Owner, getownerfromaddfriend(kandydat.ToString()), tekst, zalogowany.Owner);
+                                            dodaniewiadomosci(zalogowany.Owner, kandydat, tekst, zalogowany.Owner);
                                         }
                                         else if (tekst == "exit")
                                         {
